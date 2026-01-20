@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>桜特性診断</title>
+<style>
+body{font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;margin:16px;line-height:1.7;background:#fff7fb}
+.card{border:1px solid #f0d7e8;border-radius:14px;padding:14px;margin:12px 0;background:#fff}
+.qtitle{font-weight:800;margin-bottom:8px}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+button.choice{padding:10px;border-radius:10px;border:1px solid #e6c6db;background:#fff}
+button.choice.selected{background:#fde7f4;border-color:#c64a8a;font-weight:800}
+#result{display:none}
+h1{color:#c64a8a}
+</style>
+</head>
+<body>
+
+<h1>🌸 桜特性診断</h1>
+<p>1=全く当てはまらない / 5=とても当てはまる</p>
+
+<div id="questions"></div>
+
+<button onclick="showResult()">結果を見る</button>
+
+<div id="result" class="card"></div>
+
+<script>
+const types=["満開","夜桜","桜吹雪","紅葉","葉桜","しだれ桜"];
+
+const questions=[
+{t:"満開",q:"人前に出るとエネルギーが湧く"},
+{t:"満開",q:"場の空気を明るくするのが得意"},
+{t:"満開",q:"思い立ったらすぐ動く"},
+{t:"満開",q:"感情を素直に表現できる"},
+{t:"満開",q:"周囲を巻き込むのが好き"},
+
+{t:"夜桜",q:"一人の時間がないと疲れる"},
+{t:"夜桜",q:"深く考えてから動きたい"},
+{t:"夜桜",q:"少人数の関係が落ち着く"},
+{t:"夜桜",q:"静かな環境が好き"},
+{t:"夜桜",q:"言葉を丁寧に選ぶ"},
+
+{t:"桜吹雪",q:"変化がある方が燃える"},
+{t:"桜吹雪",q:"迷うより試す"},
+{t:"桜吹雪",q:"スピード重視"},
+{t:"桜吹雪",q:"行動で流れを作る"},
+{t:"桜吹雪",q:"止まるのが苦手"},
+
+{t:"紅葉",q:"経験を次に活かせる"},
+{t:"紅葉",q:"全体像を見るのが好き"},
+{t:"紅葉",q:"意味を理解すると動ける"},
+{t:"紅葉",q:"長期視点で考える"},
+{t:"紅葉",q:"分析が得意"},
+
+{t:"葉桜",q:"コツコツ続けられる"},
+{t:"葉桜",q:"安定したペースが好き"},
+{t:"葉桜",q:"整理や仕組みが得意"},
+{t:"葉桜",q:"準備してから動く"},
+{t:"葉桜",q:"継続力がある"},
+
+{t:"しだれ桜",q:"人の気持ちに敏感"},
+{t:"しだれ桜",q:"人を支えるのが好き"},
+{t:"しだれ桜",q:"相談されやすい"},
+{t:"しだれ桜",q:"調和を大切にする"},
+{t:"しだれ桜",q:"相手に合わせられる"}
+];
+
+const answers={};
+const wrap=document.getElementById("questions");
+
+questions.forEach((x,i)=>{
+ const d=document.createElement("div");
+ d.className="card";
+ d.innerHTML=`<div class="qtitle">Q${i+1}. ${x.q}</div>
+ <div class="scale">
+ ${[1,2,3,4,5].map(n=>`<button class="choice" onclick="pick(${i},${n},this)">${n}</button>`).join("")}
+ </div>`;
+ wrap.appendChild(d);
+});
+
+function pick(i,n,el){
+ answers[i]=n;
+ el.parentNode.querySelectorAll("button").forEach(b=>b.classList.remove("selected"));
+ el.classList.add("selected");
+}
+
+function showResult(){
+ if(Object.keys(answers).length<questions.length){
+  alert("すべて答えてください");
+  return;
+ }
+ const score={}; types.forEach(t=>score[t]=0);
+ questions.forEach((q,i)=>score[q.t]+=answers[i]);
+
+ const best=Object.entries(score).sort((a,b)=>b[1]-a[1])[0][0];
+ const msg={
+  "満開":"エネルギーで場を動かすタイプ",
+  "夜桜":"静かな信頼を積むタイプ",
+  "桜吹雪":"行動で流れを作るタイプ",
+  "紅葉":"経験を価値に変えるタイプ",
+  "葉桜":"土台を整えるタイプ",
+  "しだれ桜":"人を支えるタイプ"
+ };
+
+ const r=document.getElementById("result");
+ r.style.display="block";
+ r.innerHTML=`<h2>あなたは「${best}」</h2><p>${msg[best]}</p>`;
+ r.scrollIntoView({behavior:"smooth"});
+}
+</script>
+
+</body>
+</html>
